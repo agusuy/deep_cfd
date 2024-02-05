@@ -1,0 +1,6 @@
+numpy
+matplotlib
+notebook
+tqdm
+numba
+scikit-learn
