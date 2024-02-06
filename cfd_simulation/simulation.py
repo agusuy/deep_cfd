@@ -1,7 +1,8 @@
+import os
 import numpy as np
-from constants import NUM_SEQUENCES, LENGHT_SEQUENCE, WIDTH, HEIGHT
+from constants import DATASET_FILE, DATASET_FOLDER, NUM_SEQUENCES, \
+                        LENGHT_SEQUENCE, SIM_CONFIGURATIONS, WIDTH, HEIGHT
 from cfd import run_cfd
-from auxiliary_functions import create_configurations, generate_images
 from datetime import datetime
 from obstacles import *
 import json
@@ -10,8 +11,7 @@ def create_dataset():
     dataset = np.zeros((NUM_SEQUENCES, LENGHT_SEQUENCE, WIDTH, HEIGHT))
     print(dataset.shape)
 
-    configurations_file = "simulation_configurations.json"
-    with open(configurations_file, 'r') as f: 
+    with open(SIM_CONFIGURATIONS, 'r') as f: 
         configurations = json.load(f)
 
     for conf in configurations:
@@ -32,20 +32,15 @@ def create_dataset():
         dataset[sequence_id,:] = sequence
         print(f"{datetime.now():%d-%m-%Y %H:%M:%S}> End sequence {sequence_id}")
 
-    np.save("dataset.npy", dataset)
+    try:
+        # create folder to store results
+        os.makedirs(DATASET_FOLDER)
+    except OSError:
+        # folder already exists
+        pass
+
+    np.save(DATASET_FILE, dataset)
     return dataset
 
 if __name__ == "__main__":
-
-    create_configurations()
-
     data = create_dataset()
-    
-    print(f"{datetime.now():%d-%m-%Y %H:%M:%S}> Start generating images")
-    generate_images(NUM_SEQUENCES, LENGHT_SEQUENCE, data)
-    print(f"{datetime.now():%d-%m-%Y %H:%M:%S}> End generating images")
-
-
-    # print(f"{datetime.now():%d-%m-%Y %H:%M:%S}> Start generating images")
-    # generate_images(NUM_SEQUENCES, LENGHT_SEQUENCE)
-    # print(f"{datetime.now():%d-%m-%Y %H:%M:%S}> End generating images")

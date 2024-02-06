@@ -5,7 +5,8 @@ import numpy as np
 import json
 # from tqdm import tqdm
 from math import ceil, floor
-from constants import NUM_SEQUENCES, LENGHT_SEQUENCE, WIDTH, HEIGHT
+from constants import DATASET_FILE, IMAGES_FOLDER, NUM_SEQUENCES, \
+                        OUTPUTS_FOLDER, SIM_CONFIGURATIONS, WIDTH, HEIGHT
 from sklearn.model_selection import ParameterSampler
 
 
@@ -112,9 +113,14 @@ def create_configurations():
 
     ##########################################
 
+    try:
+        # create folder to store results
+        os.makedirs(OUTPUTS_FOLDER)
+    except OSError:
+        # folder already exists
+        pass
 
-    configurations_file = "simulation_configurations.json"
-    with open(configurations_file, 'w') as f:
+    with open(SIM_CONFIGURATIONS, 'w') as f:
         json.dump(configurations, f)
 
 def _plot_frame(frame, sequence_id, frame_id, save=True):
@@ -125,25 +131,25 @@ def _plot_frame(frame, sequence_id, frame_id, save=True):
     plt.imshow(frame.transpose(), cmap=color_map)
     plt.colorbar(label="Velocity", orientation="horizontal")
     if save:
-        folder_path = "results/sequence_{}/".format(sequence_id)
+        folder_path = IMAGES_FOLDER + "/sequence_{}/".format(sequence_id)
         file_path = folder_path + "frame_{0:04d}.png".format(frame_id)
         plt.savefig(file_path)
 
 def generate_images(num_sequences, length_sequence, dataset=None):
-    results_folder = "results"
     try:
         # create folder to store results
-        os.makedirs(results_folder)
+        os.makedirs(IMAGES_FOLDER)
     except OSError:
         # folder already exists
         # delete previous folder
-        shutil.rmtree(results_folder)
-        os.makedirs(results_folder)
+        shutil.rmtree(IMAGES_FOLDER)
+        os.makedirs(IMAGES_FOLDER)
     for i in range(num_sequences):
-        os.makedirs(results_folder + "/sequence_" + str(i))
+        folder_path = IMAGES_FOLDER + "/sequence_{}/".format(i)
+        os.makedirs(folder_path)
 
     if dataset is None:
-        dataset = np.load("dataset.npy")
+        dataset = np.load(DATASET_FILE)
     print(dataset.shape)
 
     # Generate sequence images
@@ -153,10 +159,3 @@ def generate_images(num_sequences, length_sequence, dataset=None):
         for frame_number in range(length_sequence):
             frame = sequence[frame_number]
             _plot_frame(frame, seq, frame_number)
-
-
-if __name__ == "__main__":
-
-    create_configurations()
-
-    # generate_images(NUM_SEQUENCES, LENGHT_SEQUENCE)
