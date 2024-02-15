@@ -90,6 +90,7 @@ def cfd_step(sequence, fin, vel, obstacle, time):
     if (time%100==0):
         frame_id = time//100
         frame = np.sqrt(velocity[0]**2+velocity[1]**2)
+        frame[obstacle] = -1
         sequence[frame_id, : ] = frame
 
 

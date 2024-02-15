@@ -128,6 +128,9 @@ def _plot_frame(frame, sequence_id, frame_id, save=True):
 
     color_map = plt.cm.jet
     
+    color_map.set_bad(color='black')
+    frame[frame==-1] = np.nan
+    
     plt.imshow(frame.transpose(), cmap=color_map)
     plt.colorbar(label="Velocity", orientation="horizontal")
     if save:
