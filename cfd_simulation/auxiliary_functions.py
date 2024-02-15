@@ -24,52 +24,6 @@ def _build_configuration(id, obstacle_type, obstacle_parameters):
 
 def create_configurations():
     configurations = []
-    
-    # cx, cy, r = WIDTH//4, HEIGHT//2, HEIGHT//9
-    # semi_major_axis = r*2
-    # semi_minor_axis = r
-
-    # configurations = [
-    #     {
-    #         "id": 0,
-    #         "obstacle": {
-    #             "type": "circumference",
-    #             "parameters": {
-    #                 "center_x": cx,
-    #                 "center_y": cy,
-    #                 "radius": r
-    #             }
-    #         }
-    #     },
-    #     {
-    #         "id": 1,
-    #         "obstacle": {
-    #             "type": "elipse",
-    #             "parameters": {
-    #                 "center_x": cx,
-    #                 "center_y": cy,
-    #                 "semi_major_axis": semi_major_axis,
-    #                 "semi_minor_axis": semi_minor_axis,
-    #                 "degrees": 0
-    #             }
-    #         }
-    #     },
-    #     {
-    #         "id": 2,
-    #         "obstacle": {
-    #             "type": "elipse",
-    #             "parameters": {
-    #                 "center_x": cx,
-    #                 "center_y": cy,
-    #                 "semi_major_axis": semi_major_axis,
-    #                 "semi_minor_axis": semi_minor_axis,
-    #                 "degrees": 5
-    #             }
-    #         }
-    #     }
-    # ]
-    
-    configurations = []
     id = 0
 
     ##########################################
@@ -85,7 +39,7 @@ def create_configurations():
     circumference_param_grid = {
         "center_x": range(WIDTH//4, WIDTH//2, 10),
         "center_y": range(HEIGHT//3, 2*HEIGHT//3, 10),
-        "radius": range(HEIGHT//9, HEIGHT//3, 5)
+        "radius": range(HEIGHT//9, HEIGHT//5, 3)
     }
     circumference_parameters = _select_parameters(amount_circumference, 
                                                   circumference_param_grid)
