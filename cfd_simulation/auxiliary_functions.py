@@ -3,8 +3,6 @@ import shutil
 import matplotlib.pyplot as plt
 import numpy as np
 import json
-# from tqdm import tqdm
-from math import ceil, floor
 from constants import DATASET_FILE, IMAGES_FOLDER, NUM_SEQUENCES, \
                         OUTPUTS_FOLDER, SIM_CONFIGURATIONS, WIDTH, HEIGHT
 from sklearn.model_selection import ParameterSampler
@@ -25,17 +23,16 @@ def _build_configuration(id, obstacle_type, obstacle_parameters):
 def create_configurations():
     configurations = []
     id = 0
-
-    ##########################################
-
+    
     shapes_number = 2
-
     amount, extra = divmod(NUM_SEQUENCES, shapes_number)
-    
     amount_circumference = amount
-    amount_elipses = amount + extra
-    
-    # circumference
+    amount_ellipses = amount + extra
+
+    # amount_circumference = NUM_SEQUENCES
+    # amount_ellipses = NUM_SEQUENCES
+
+    # Circumference
     circumference_param_grid = {
         "center_x": range(WIDTH//4, WIDTH//2, 10),
         "center_y": range(HEIGHT//3, 2*HEIGHT//3, 10),
@@ -49,23 +46,20 @@ def create_configurations():
         )
         id+=1
 
-    # elipse
-    elipses_param_grid = {
+    # Ellipse
+    ellipses_param_grid = {
         "center_x": range(WIDTH//4, WIDTH//2, 10),
         "center_y": range(HEIGHT//3, 2*HEIGHT//3, 10),
         "semi_major_axis": range(HEIGHT//9, HEIGHT//3, 10),
         "semi_minor_axis": range(HEIGHT//18, HEIGHT//6, 10),
         "degrees": range(-30, 30, 10)
     }
-    elipses_parameters = _select_parameters(amount_elipses, elipses_param_grid)
-    for parameters in elipses_parameters:
+    ellipses_parameters = _select_parameters(amount_ellipses, ellipses_param_grid)
+    for parameters in ellipses_parameters:
         configurations.append(
-            _build_configuration(id, "elipse", parameters)
+            _build_configuration(id, "ellipse", parameters)
         )
         id+=1
-
-
-    ##########################################
 
     try:
         # create folder to store results
@@ -86,6 +80,7 @@ def _plot_frame(frame, sequence_id, frame_id, save=True):
     frame[frame==-1] = np.nan
     
     plt.imshow(frame.transpose(), cmap=color_map)
+    plt.axis("off")
     plt.colorbar(label="Velocity", orientation="horizontal")
     if save:
         folder_path = IMAGES_FOLDER + "/sequence_{}/".format(sequence_id)
@@ -107,12 +102,10 @@ def generate_images(num_sequences, length_sequence, dataset=None):
 
     if dataset is None:
         dataset = np.load(DATASET_FILE)
-    print(dataset.shape)
 
     # Generate sequence images
     for seq in range(num_sequences):
         sequence = dataset[seq,:] # select sequence from dataset
-        # for frame_number in tqdm(range(length_sequence)):
         for frame_number in range(length_sequence):
             frame = sequence[frame_number]
             _plot_frame(frame, seq, frame_number)

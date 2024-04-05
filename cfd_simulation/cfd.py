@@ -102,7 +102,7 @@ def run_cfd(obstacle):
     vel = np.fromfunction(inlet_velocity, (2,WIDTH,HEIGHT))
     fin = equilibrium(1, vel)
 
-    # for time in tqdm(range(interations)):
+    # for time in tqdm(range(-WARM_UP_ITERATIONS, ITERATIONS)):
     for time in range(-WARM_UP_ITERATIONS, ITERATIONS):
         cfd_step(sequence, fin, vel, obstacle, time)
 
