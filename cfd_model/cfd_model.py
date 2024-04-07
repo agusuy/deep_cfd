@@ -1,18 +1,21 @@
+import os
+import tensorflow as tf
 from datetime import datetime
-from tensorflow.distribute import MirroredStrategy
 from keras.models import Model
 from keras.layers import Input, Conv2D, ConvLSTM2D, MaxPool3D, UpSampling3D, LeakyReLU
 from keras.losses import MeanAbsoluteError, MeanSquaredError
 from keras.optimizers import Adam
 
+PROJECT_FOLDER = os.path.dirname(__file__)
+MODELS_FOLDER = os.path.join(PROJECT_FOLDER, "models")
 
-def create_model(input_size):
+def create_model(input_dimensions):
     GPUS = ["GPU:0","GPU:1"]
     # GPUS = ["GPU:0"]
-    strategy = MirroredStrategy(GPUS)
+    strategy = tf.distribute.MirroredStrategy(GPUS)
 
     with strategy.scope():
-        input_dimensions = input_size
+        input_dimensions = input_dimensions
 
         # Encoder
         input = Input(input_dimensions)
@@ -60,8 +63,6 @@ def create_model(input_size):
     model.summary()
     return model
 
-
-
 def training(model, X_train, y_train, X_val, y_val):
     batch_size = 16
 
@@ -74,7 +75,7 @@ def training(model, X_train, y_train, X_val, y_val):
         batch_size=batch_size, epochs=epochs,
         verbose=1)
 
-    model_name = f"./models/_model_{datetime.now():%Y%m%d_%H%M%S}"
+    model_name = MODELS_FOLDER + f"/model_{datetime.now():%Y%m%d_%H%M}"
     model.save(model_name + ".h5", save_format="h5")
 
     return history, model
