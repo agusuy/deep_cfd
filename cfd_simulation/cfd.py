@@ -1,7 +1,7 @@
 import numpy as np
 # from tqdm import tqdm
 from numba import njit
-from constants import ITERATIONS, LENGHT_SEQUENCE, WIDTH, HEIGHT
+from constants import ITERATIONS, LENGHT_SEQUENCE, WARM_UP_ITERATIONS, WIDTH, HEIGHT
 
 ############################ Parameters #############################
 
@@ -87,7 +87,7 @@ def cfd_step(sequence, fin, vel, obstacle, time):
                         )
 
     # Save state in dataset
-    if (time%100==0):
+    if (time>=0 and time%100==0):
         frame_id = time//100
         frame = np.sqrt(velocity[0]**2+velocity[1]**2)
         frame[obstacle] = -1
@@ -102,8 +102,8 @@ def run_cfd(obstacle):
     vel = np.fromfunction(inlet_velocity, (2,WIDTH,HEIGHT))
     fin = equilibrium(1, vel)
 
-    # for time in tqdm(range(interations)):
-    for time in range(ITERATIONS):
+    # for time in tqdm(range(-WARM_UP_ITERATIONS, ITERATIONS)):
+    for time in range(-WARM_UP_ITERATIONS, ITERATIONS):
         cfd_step(sequence, fin, vel, obstacle, time)
 
     return sequence

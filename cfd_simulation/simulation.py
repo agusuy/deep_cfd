@@ -1,7 +1,8 @@
 import os
 import numpy as np
-from constants import DATASET_FILE, DATASET_FOLDER, NUM_SEQUENCES, \
-                        LENGHT_SEQUENCE, SIM_CONFIGURATIONS, WIDTH, HEIGHT
+from constants import DATASET_FILE, DATASET_FOLDER, \
+                        SIM_CONFIGURATIONS, SIM_STATS, \
+                        NUM_SEQUENCES, LENGHT_SEQUENCE, WIDTH, HEIGHT
 from cfd import run_cfd
 from datetime import datetime
 from obstacles import *
@@ -14,23 +15,21 @@ def create_dataset():
     with open(SIM_CONFIGURATIONS, 'r') as f: 
         configurations = json.load(f)
 
-    for conf in configurations:
-        sequence_id = conf["id"]
+    with open(SIM_STATS, 'w') as f:
+        f.write(f"sequence_id, simulation_duration\n")
 
-        obstacle_type = conf["obstacle"]["type"]
-        obstacle_parameters = conf["obstacle"]["parameters"]
+        for conf in configurations:
+            sequence_id = conf["id"]
 
-        if obstacle_type == "circumference":
-            obstacle_fun = circumference(**obstacle_parameters) 
-        elif obstacle_type == "elipse":
-            obstacle_fun = elipse(**obstacle_parameters)
+            start_time = datetime.now()
+            print(f">{start_time:%d-%m-%Y %H:%M:%S} Start sequence {sequence_id}")
             
-        obstacle = np.fromfunction(obstacle_fun, (WIDTH,HEIGHT))
-        
-        print(f"{datetime.now():%d-%m-%Y %H:%M:%S}> Start sequence {sequence_id}")
-        sequence = run_cfd(obstacle)
-        dataset[sequence_id,:] = sequence
-        print(f"{datetime.now():%d-%m-%Y %H:%M:%S}> End sequence {sequence_id}")
+            simulate_configuration(dataset, conf)
+
+            end_time = datetime.now()
+            print(f">{end_time:%d-%m-%Y %H:%M:%S} End sequence {sequence_id}")
+            simulation_duration = (end_time - start_time).total_seconds()
+            f.write(f"{sequence_id}, {simulation_duration}\n")
 
     try:
         # create folder to store results
@@ -41,6 +40,22 @@ def create_dataset():
 
     np.save(DATASET_FILE, dataset)
     return dataset
+
+def simulate_configuration(dataset, conf):
+    sequence_id = conf["id"]
+
+    obstacle_type = conf["obstacle"]["type"]
+    obstacle_parameters = conf["obstacle"]["parameters"]
+
+    if obstacle_type == "circumference":
+        obstacle_fun = circumference(**obstacle_parameters) 
+    elif obstacle_type == "ellipse":
+        obstacle_fun = ellipse(**obstacle_parameters)
+            
+    obstacle = np.fromfunction(obstacle_fun, (WIDTH,HEIGHT))
+    
+    sequence = run_cfd(obstacle)
+    dataset[sequence_id,:] = sequence
 
 if __name__ == "__main__":
     data = create_dataset()
