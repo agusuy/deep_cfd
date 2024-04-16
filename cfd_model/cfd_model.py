@@ -1,13 +1,11 @@
 import os
+import matplotlib.pyplot as plt
 import tensorflow as tf
-from datetime import datetime
 from keras.models import Model
 from keras.layers import Input, Conv2D, ConvLSTM2D, MaxPool3D, UpSampling3D, LeakyReLU
 from keras.losses import MeanAbsoluteError, MeanSquaredError
 from keras.optimizers import Adam
 
-PROJECT_FOLDER = os.path.dirname(__file__)
-MODELS_FOLDER = os.path.join(PROJECT_FOLDER, "models")
 
 def create_model(input_dimensions):
     GPUS = ["GPU:0","GPU:1"]
@@ -67,7 +65,7 @@ def training(model, X_train, y_train, X_val, y_val):
     batch_size = 16
 
     # epochs = 4
-    epochs = 400
+    epochs = 500
 
     history = model.fit(
         X_train, [X_train, y_train],
@@ -75,7 +73,23 @@ def training(model, X_train, y_train, X_val, y_val):
         batch_size=batch_size, epochs=epochs,
         verbose=1)
 
-    model_name = MODELS_FOLDER + f"/model_{datetime.now():%Y%m%d_%H%M}"
-    model.save(model_name + ".h5", save_format="h5")
-
     return history, model
+
+def plot_training_history(history, model_name):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    fig.suptitle('Training loss')
+
+    ax1.plot(history.history['decoder_output_loss'][2:])
+    ax1.set_title('Autoencoder loss')
+    ax1.set_ylabel('loss')
+    ax1.set_xlabel('epoch')
+    # plt.legend(['train'], loc='upper left')
+
+    ax2.plot(history.history['predictor_output_loss'][2:])
+    ax2.set_title('Predictor loss')
+    ax2.set_ylabel('loss')
+    ax2.set_xlabel('epoch')
+    # plt.legend(['train'], loc='upper left')
+    plt.tight_layout()
+    fig.savefig(model_name + "_training.png")
+    fig.show()
