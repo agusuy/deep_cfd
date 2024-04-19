@@ -58,18 +58,18 @@ def create_model(input_dimensions):
 
         model.compile(optimizer=Adam(learning_rate=0.001), loss=MeanSquaredError())
 
-    model.summary()
+    # model.summary()
     return model
 
 def training(model, X_train, y_train, X_val, y_val):
     batch_size = 16
 
-    # epochs = 4
+    # epochs = 2
     epochs = 500
 
     history = model.fit(
         X_train, [X_train, y_train],
-        # validation_data=(X_val, [X_val, y_val]),
+        validation_data=(X_val, [X_val, y_val]),
         batch_size=batch_size, epochs=epochs,
         verbose=1)
 
@@ -79,17 +79,21 @@ def plot_training_history(history, model_name):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     fig.suptitle('Training loss')
 
-    ax1.plot(history.history['decoder_output_loss'][2:])
+    plot_start = 2
+
+    ax1.plot(history.history['decoder_output_loss'][plot_start:])
+    ax1.plot(history.history['val_decoder_output_loss'][plot_start:])
     ax1.set_title('Autoencoder loss')
     ax1.set_ylabel('loss')
     ax1.set_xlabel('epoch')
-    # plt.legend(['train'], loc='upper left')
+    ax1.legend(['train', 'validation'], loc='upper right')
 
-    ax2.plot(history.history['predictor_output_loss'][2:])
+    ax2.plot(history.history['predictor_output_loss'][plot_start:])
+    ax2.plot(history.history['val_predictor_output_loss'][plot_start:])
     ax2.set_title('Predictor loss')
     ax2.set_ylabel('loss')
     ax2.set_xlabel('epoch')
-    # plt.legend(['train'], loc='upper left')
-    plt.tight_layout()
+    ax2.legend(['train', 'validation'], loc='upper right')
+
     fig.savefig(model_name + "_training.png")
     fig.show()
