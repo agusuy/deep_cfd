@@ -65,10 +65,10 @@ def print_dataset_statistics(data):
     data_mean = np.nanmean(data)
     data_median = np.nanmedian(data)
     data_variance = np.nanvar(data)
+    
+    statistics = f"{data_max=:.5f} {data_min=:.5f} {data_mean=:.5f} {data_median=:.5f} {data_variance=:.5f}"
 
-    print(
-        f"{data_max=} {data_min=} {data_mean=} {data_median=} {data_variance=}"
-        )
+    print(statistics)
 
 def get_dataset(file):
     dataset_original = _load_data(file)

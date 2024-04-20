@@ -1,5 +1,5 @@
-import os
 import matplotlib.pyplot as plt
+import numpy as np
 import tensorflow as tf
 from keras.models import Model
 from keras.layers import Input, Conv2D, ConvLSTM2D, MaxPool3D, UpSampling3D, LeakyReLU
@@ -97,3 +97,18 @@ def plot_training_history(history, model_name):
 
     fig.savefig(model_name + "_training.png")
     fig.show()
+
+def generate_sequence(model, sequence, window):
+    dim=sequence.shape
+    generated_sequence_size = dim[0]
+    generated_sequence = np.zeros(dim)
+
+    # initial condition
+    generated_sequence[0:window-1] = sequence[0:window-1]
+
+    for i in range(generated_sequence_size-window+1):
+        input = sequence[i:i+window-1]
+        predicted_frame = model.predict(np.expand_dims(input, axis=0), verbose=0)[1][0]
+        generated_sequence[i+window-1] = predicted_frame
+    
+    return generated_sequence
