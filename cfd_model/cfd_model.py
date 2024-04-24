@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+from datetime import datetime
+from keras.models import load_model
 from keras.models import Model
 from keras.layers import Input, Conv2D, ConvLSTM2D, MaxPool3D, UpSampling3D, LeakyReLU
 from keras.losses import MeanAbsoluteError, MeanSquaredError
 from keras.optimizers import Adam
-
+from .constants import MODEL_STATS
 
 def create_model(input_dimensions):
     GPUS = ["GPU:0","GPU:1"]
@@ -107,6 +109,7 @@ def generate_sequence(model, sequence, window):
     generated_sequence[0:window-1] = sequence[0:window-1]
 
     for i in range(generated_sequence_size-window+1):
+        # input = generated_sequence[i:i+window-1]
         input = sequence[i:i+window-1]
         predicted_frame = model.predict(np.expand_dims(input, axis=0), verbose=0)[1][0]
         generated_sequence[i+window-1] = predicted_frame
@@ -123,3 +126,18 @@ def generate_sequences(model, dataset, window):
     # TODO: save file?
 
     return generated_dataset
+
+def measure_stats(model, dataset, window):
+    
+    # TODO: Add error
+    with open(MODEL_STATS, 'w') as f:
+        f.write(f"sequence_id, model_duration\n")
+
+        for sequence_id, sequence in enumerate(dataset):
+
+            start_time = datetime.now()
+            generated_sequence = generate_sequence(model, sequence, window)
+            end_time = datetime.now()
+
+            model_duration = (end_time - start_time).total_seconds()
+            f.write(f"{sequence_id}, {model_duration}\n")
