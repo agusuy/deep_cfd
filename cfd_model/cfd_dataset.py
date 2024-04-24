@@ -71,6 +71,7 @@ def print_dataset_statistics(data):
     print(statistics)
 
 def get_dataset(file):
+    # TODO: Split this function
     dataset_original = _load_data(file)
     print("Original Dataset:")
     print_dataset_dimension(dataset_original)
