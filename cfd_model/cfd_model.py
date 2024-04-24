@@ -112,3 +112,14 @@ def generate_sequence(model, sequence, window):
         generated_sequence[i+window-1] = predicted_frame
     
     return generated_sequence
+
+def generate_sequences(model, dataset, window):
+    generated_dataset = np.zeros(dataset.shape)
+
+    for i, sequence in enumerate(dataset):
+        generated_sequence = generate_sequence(model, sequence, window)
+        generated_dataset[i,:] = generated_sequence
+
+    # TODO: save file?
+
+    return generated_dataset
