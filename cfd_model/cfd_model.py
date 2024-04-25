@@ -7,7 +7,7 @@ from keras.models import Model
 from keras.layers import Input, Conv2D, ConvLSTM2D, MaxPool3D, UpSampling3D, LeakyReLU
 from keras.losses import MeanAbsoluteError, MeanSquaredError
 from keras.optimizers import Adam
-from .constants import MODEL_STATS
+from constants import MODEL_STATS
 
 def create_model(input_dimensions):
     GPUS = ["GPU:0","GPU:1"]
@@ -131,13 +131,19 @@ def measure_stats(model, dataset, window):
     
     # TODO: Add error
     with open(MODEL_STATS, 'w') as f:
-        f.write(f"sequence_id, model_duration\n")
+        f.write(f"sequence_id, model_duration, sequence_error\n")
 
         for sequence_id, sequence in enumerate(dataset):
 
             start_time = datetime.now()
             generated_sequence = generate_sequence(model, sequence, window)
             end_time = datetime.now()
-
             model_duration = (end_time - start_time).total_seconds()
-            f.write(f"{sequence_id}, {model_duration}\n")
+            
+            sequence_errors = []
+            for frame, generated_frame in zip(sequence, generated_sequence):
+                frame_error = np.square(frame - generated_frame)
+                sequence_errors.append(frame_error)
+            sequence_error = np.average(sequence_errors)
+
+            f.write(f"{sequence_id}, {model_duration}, {sequence_error}\n")
