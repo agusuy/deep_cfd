@@ -129,7 +129,6 @@ def generate_sequences(model, dataset, window):
 
 def measure_stats(model, dataset, window):
     
-    # TODO: Add error
     with open(MODEL_STATS, 'w') as f:
         f.write(f"sequence_id, model_duration, sequence_error\n")
 
