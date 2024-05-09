@@ -22,7 +22,7 @@ def plot_frame(frame, title, color_map=None, show_color_var=True):
         plt.colorbar(label="Velocity", orientation="horizontal")
     plt.show()
 
-def plot_compare_frames(frame1, frame2, title1, title2, color_map=None, show_color_var=True, orientation="v"):
+def plot_compare_frames(frame1, frame2, title1, title2, color_map=None, show_color_var=True, orientation="v", save=False):
     if not color_map:
         color_map = get_color_map()
 

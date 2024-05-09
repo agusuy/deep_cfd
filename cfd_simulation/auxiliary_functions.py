@@ -50,8 +50,8 @@ def create_configurations():
     ellipses_param_grid = {
         "center_x": range(WIDTH//4, WIDTH//2, 10),
         "center_y": range(HEIGHT//3, 2*HEIGHT//3, 10),
-        "semi_major_axis": range(HEIGHT//9, HEIGHT//3, 10),
-        "semi_minor_axis": range(HEIGHT//18, HEIGHT//6, 10),
+        "semi_major_axis": range(HEIGHT//5, HEIGHT//3, 5),
+        "semi_minor_axis_proportion": np.arange(1/5, 1/4, 0.01),
         "degrees": range(-30, 30, 10)
     }
     ellipses_parameters = _select_parameters(amount_ellipses, ellipses_param_grid)

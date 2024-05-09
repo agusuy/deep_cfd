@@ -60,17 +60,18 @@ def print_dataset_dimension(data):
     print(f"{num_sequences=} {lenght_sequence=} {frame_width=} {frame_height=}")
 
 def print_dataset_statistics(data):
-    data_max = np.nanmin(data)
-    data_min = np.nanmax(data)
+    data_max = np.nanmax(data)
+    data_min = np.nanmin(data[data>-1])
     data_mean = np.nanmean(data)
     data_median = np.nanmedian(data)
     data_variance = np.nanvar(data)
     
-    statistics = f"{data_max=:.5f} {data_min=:.5f} {data_mean=:.5f} {data_median=:.5f} {data_variance=:.5f}"
+    statistics = f"{data_min=:.7f} {data_max=:.7f} {data_mean=:.7f} {data_median=:.7f} {data_variance=:.7f}"
 
     print(statistics)
 
 def get_dataset(file):
+    # TODO: Split this function
     dataset_original = _load_data(file)
     print("Original Dataset:")
     print_dataset_dimension(dataset_original)
