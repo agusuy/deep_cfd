@@ -60,8 +60,8 @@ def generate_simulation_images():
 def generate_model_images():
     # TODO: Refactor. Constants file
     WINDOW = 5
-    DATASET_FILE = os.path.join(DATASET_FOLDER, "dataset_2024_04_06.npy")
-    MODEL_FILE = "./cfd_model/models/model_20240411_1543.h5"
+    DATASET_FILE = os.path.join(DATASET_FOLDER, "dataset_2024_04_25.npy")
+    MODEL_FILE = "./cfd_model/models/model_20240426_0724.h5"
     
     original_sequences, _, _, _, _ = get_dataset(DATASET_FILE)
 
