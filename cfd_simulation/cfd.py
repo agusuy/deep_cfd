@@ -1,7 +1,9 @@
 import numpy as np
 # from tqdm import tqdm
 from numba import njit
-from constants import ITERATIONS, LENGHT_SEQUENCE, WARM_UP_ITERATIONS, WIDTH, HEIGHT
+from .simulation_constants import ITERATIONS, LENGHT_SEQUENCE, \
+                                WARM_UP_ITERATIONS, WIDTH, HEIGHT
+
 
 ############################ Parameters #############################
 
@@ -98,7 +100,6 @@ def run_cfd(obstacle):
     sequence = np.zeros((LENGHT_SEQUENCE, WIDTH, HEIGHT))
     
     # Initialize simulation
-
     vel = np.fromfunction(inlet_velocity, (2,WIDTH,HEIGHT))
     fin = equilibrium(1, vel)
 

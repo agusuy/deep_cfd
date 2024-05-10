@@ -1,8 +1,7 @@
-import os
 import numpy as np
 import json
-from constants import NUM_SEQUENCES, OUTPUTS_FOLDER, SIM_CONFIGURATIONS, WIDTH, HEIGHT
 from sklearn.model_selection import ParameterSampler
+from .simulation_constants import NUM_SEQUENCES, WIDTH, HEIGHT
 
 
 def _select_parameters(amount, param_grid):
@@ -31,6 +30,7 @@ def _ellipse_configurations(configurations, id, amount_ellipses):
             _build_configuration(id, "ellipse", parameters)
         )
         id+=1
+    return id
 
 def _circumference_configurations(configurations, id, amount_circumference):
     circumference_param_grid = {
@@ -45,8 +45,9 @@ def _circumference_configurations(configurations, id, amount_circumference):
             _build_configuration(id, "circumference", parameters)
         )
         id+=1
+    return id
 
-def create_configurations():
+def create_configurations(sim_conf_file):
     configurations = []
     id = 0
     
@@ -55,16 +56,9 @@ def create_configurations():
     amount_circumference = amount
     amount_ellipses = amount + extra
 
-    _circumference_configurations(configurations, id, amount_circumference)
+    id = _circumference_configurations(configurations, id, amount_circumference)
     
-    _ellipse_configurations(configurations, id, amount_ellipses)
+    id = _ellipse_configurations(configurations, id, amount_ellipses)
 
-    try:
-        # create folder to store results
-        os.makedirs(OUTPUTS_FOLDER)
-    except OSError:
-        # folder already exists
-        pass
-
-    with open(SIM_CONFIGURATIONS, 'w') as f:
+    with open(sim_conf_file, 'w') as f:
         json.dump(configurations, f)

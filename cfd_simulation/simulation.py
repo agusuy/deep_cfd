@@ -1,13 +1,10 @@
-import os
 import numpy as np
-from configurations import create_configurations
-from constants import DATASET_FILE, DATASET_FOLDER, \
-                        SIM_CONFIGURATIONS, SIM_STATS, \
-                        NUM_SEQUENCES, LENGHT_SEQUENCE, WIDTH, HEIGHT
-from cfd import run_cfd
-from datetime import datetime
-from obstacles import *
 import json
+from datetime import datetime
+from .configurations import create_configurations
+from .simulation_constants import NUM_SEQUENCES, LENGHT_SEQUENCE, WIDTH, HEIGHT
+from .cfd import run_cfd
+from .obstacles import *
 
 def _simulate_configuration(dataset, conf):
     sequence_id = conf["id"]
@@ -25,11 +22,11 @@ def _simulate_configuration(dataset, conf):
     sequence = run_cfd(obstacle)
     dataset[sequence_id,:] = sequence
 
-def run_simulations(dataset):
-    with open(SIM_CONFIGURATIONS, 'r') as f: 
+def run_simulations(dataset, sim_conf_file, sim_stats_file):
+    with open(sim_conf_file, 'r') as f: 
         configurations = json.load(f)
 
-    with open(SIM_STATS, 'w') as f:
+    with open(sim_stats_file, 'w') as f:
         f.write(f"sequence_id, simulation_duration\n")
 
         for conf in configurations:
@@ -45,23 +42,17 @@ def run_simulations(dataset):
             simulation_duration = (end_time - start_time).total_seconds()
             f.write(f"{sequence_id}, {simulation_duration}\n")
 
-def create_dataset():
-    create_configurations()
+def create_dataset(dataset_file, sim_conf_file, sim_stats_file):
+    create_configurations(sim_conf_file)
 
     dataset = np.zeros((NUM_SEQUENCES, LENGHT_SEQUENCE, WIDTH, HEIGHT))
     print(dataset.shape)
 
     print(f">{datetime.now():%d-%m-%Y %H:%M:%S} Start generating dataset")
     
-    run_simulations(dataset)
+    run_simulations(dataset, sim_conf_file, sim_stats_file)
     
-    try:
-        # create folder to store results
-        os.makedirs(DATASET_FOLDER)
-    except OSError:
-        # folder already exists
-        pass
-    np.save(DATASET_FILE, dataset)
+    np.save(dataset_file, dataset)
 
     print(f">{datetime.now():%d-%m-%Y %H:%M:%S} End generating dataset")
     
