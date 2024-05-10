@@ -8,9 +8,8 @@ from keras.models import Model
 from keras.layers import Input, Conv2D, ConvLSTM2D, MaxPool3D, UpSampling3D, LeakyReLU
 from keras.losses import MeanAbsoluteError, MeanSquaredError
 from keras.optimizers import Adam
-from constants import MODEL_STATS
 from datetime import datetime
-from cfd_dataset import get_dataset
+from .cfd_dataset import get_dataset
 
 def create_model(input_dimensions):
     GPUS = ["GPU:0","GPU:1"]
@@ -80,27 +79,21 @@ def training(model, X_train, y_train, X_val, y_val):
 
     return history, model
 
-def run_model_training():
-    ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
-    DATASET_FOLDER = os.path.join(ROOT, "dataset")
-    DATASET_FILE = os.path.join(DATASET_FOLDER, "dataset_2024_04_25.npy")
-
-    PROJECT_FOLDER = os.path.dirname(__file__)
-    MODELS_FOLDER = os.path.join(PROJECT_FOLDER, "models")
-
-    dataset, X_train, y_train, X_val, y_val =  get_dataset(DATASET_FILE)
+def run_model_training(dataset_file, models_folder, plots_folder):
+    _, X_train, y_train, X_val, y_val =  get_dataset(dataset_file)
 
     input_dimensions = X_train[0].shape
     model = create_model(input_dimensions)
 
     training_history, model = training(model, X_train, y_train, X_val, y_val)
 
-    model_name = MODELS_FOLDER + f"/model_{datetime.now():%Y%m%d_%H%M}"
-    model.save(model_name + ".h5", save_format="h5")
+    model_name = f"model_{datetime.now():%Y%m%d_%H%M}"
+    model_path = os.path.join(models_folder, model_name + ".h5")
+    model.save(model_path, save_format="h5")
 
-    plot_training_history(training_history, model_name)
+    plot_training_history(training_history, model_name, plots_folder)
 
-def plot_training_history(history, model_name):
+def plot_training_history(history, model_name, plots_folder):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     fig.suptitle('Training loss')
 
@@ -120,7 +113,8 @@ def plot_training_history(history, model_name):
     ax2.set_xlabel('epoch')
     ax2.legend(['train', 'validation'], loc='upper right')
 
-    fig.savefig(model_name + "_training.png")
+    plot_path = os.path.join(plots_folder, model_name + "_training.png")
+    fig.savefig(plot_path)
     fig.show()
 
 def generate_sequence(model, sequence, window):
@@ -150,9 +144,9 @@ def generate_sequences(model, dataset, window):
 
     return generated_dataset
 
-def measure_stats(model, dataset, window):
+def measure_stats(model, dataset, window, model_stats_file):
     
-    with open(MODEL_STATS, 'w') as f:
+    with open(model_stats_file, 'w') as f:
         f.write(f"sequence_id, model_duration, sequence_error\n")
 
         for sequence_id, sequence in enumerate(dataset):

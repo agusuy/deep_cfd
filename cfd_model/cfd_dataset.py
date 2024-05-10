@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-
-WINDOW = 5
+from .model_constants import WINDOW
 
 def _load_data(file):
     dataset_original = np.load(file)
