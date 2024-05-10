@@ -8,6 +8,22 @@ from datetime import datetime
 from obstacles import *
 import json
 
+def _simulate_configuration(dataset, conf):
+    sequence_id = conf["id"]
+
+    obstacle_type = conf["obstacle"]["type"]
+    obstacle_parameters = conf["obstacle"]["parameters"]
+
+    if obstacle_type == "circumference":
+        obstacle_fun = circumference(**obstacle_parameters) 
+    elif obstacle_type == "ellipse":
+        obstacle_fun = ellipse(**obstacle_parameters)
+            
+    obstacle = np.fromfunction(obstacle_fun, (WIDTH,HEIGHT))
+    
+    sequence = run_cfd(obstacle)
+    dataset[sequence_id,:] = sequence
+
 def create_dataset():
     dataset = np.zeros((NUM_SEQUENCES, LENGHT_SEQUENCE, WIDTH, HEIGHT))
     print(dataset.shape)
@@ -24,7 +40,7 @@ def create_dataset():
             start_time = datetime.now()
             print(f">{start_time:%d-%m-%Y %H:%M:%S} Start sequence {sequence_id}")
             
-            simulate_configuration(dataset, conf)
+            _simulate_configuration(dataset, conf)
 
             end_time = datetime.now()
             print(f">{end_time:%d-%m-%Y %H:%M:%S} End sequence {sequence_id}")
@@ -40,22 +56,6 @@ def create_dataset():
 
     np.save(DATASET_FILE, dataset)
     return dataset
-
-def simulate_configuration(dataset, conf):
-    sequence_id = conf["id"]
-
-    obstacle_type = conf["obstacle"]["type"]
-    obstacle_parameters = conf["obstacle"]["parameters"]
-
-    if obstacle_type == "circumference":
-        obstacle_fun = circumference(**obstacle_parameters) 
-    elif obstacle_type == "ellipse":
-        obstacle_fun = ellipse(**obstacle_parameters)
-            
-    obstacle = np.fromfunction(obstacle_fun, (WIDTH,HEIGHT))
-    
-    sequence = run_cfd(obstacle)
-    dataset[sequence_id,:] = sequence
 
 if __name__ == "__main__":
     data = create_dataset()
