@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
@@ -8,6 +9,8 @@ from keras.layers import Input, Conv2D, ConvLSTM2D, MaxPool3D, UpSampling3D, Lea
 from keras.losses import MeanAbsoluteError, MeanSquaredError
 from keras.optimizers import Adam
 from constants import MODEL_STATS
+from datetime import datetime
+from cfd_dataset import get_dataset
 
 def create_model(input_dimensions):
     GPUS = ["GPU:0","GPU:1"]
@@ -76,6 +79,26 @@ def training(model, X_train, y_train, X_val, y_val):
         verbose=1)
 
     return history, model
+
+def run_model_training():
+    ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
+    DATASET_FOLDER = os.path.join(ROOT, "dataset")
+    DATASET_FILE = os.path.join(DATASET_FOLDER, "dataset_2024_04_25.npy")
+
+    PROJECT_FOLDER = os.path.dirname(__file__)
+    MODELS_FOLDER = os.path.join(PROJECT_FOLDER, "models")
+
+    dataset, X_train, y_train, X_val, y_val =  get_dataset(DATASET_FILE)
+
+    input_dimensions = X_train[0].shape
+    model = create_model(input_dimensions)
+
+    training_history, model = training(model, X_train, y_train, X_val, y_val)
+
+    model_name = MODELS_FOLDER + f"/model_{datetime.now():%Y%m%d_%H%M}"
+    model.save(model_name + ".h5", save_format="h5")
+
+    plot_training_history(training_history, model_name)
 
 def plot_training_history(history, model_name):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
