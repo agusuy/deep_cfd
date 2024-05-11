@@ -10,6 +10,7 @@ from keras.losses import MeanAbsoluteError, MeanSquaredError
 from keras.optimizers import Adam
 from datetime import datetime
 from .cfd_dataset import get_dataset
+from .model_constants import WINDOW
 
 def get_model(model_file):
     model = load_model(model_file)
@@ -123,19 +124,19 @@ def plot_training_history(history, model_name, plots_folder):
     fig.savefig(plot_path)
     fig.show()
 
-def generate_sequence(model, sequence, window):
+def generate_sequence(model, sequence):
     dim=sequence.shape
     generated_sequence_size = dim[0]
     generated_sequence = np.zeros(dim)
 
     # initial condition
-    generated_sequence[0:window-1] = sequence[0:window-1]
+    generated_sequence[0:WINDOW-1] = sequence[0:WINDOW-1]
 
-    for i in range(generated_sequence_size-window+1):
-        # input = generated_sequence[i:i+window-1]
-        input = sequence[i:i+window-1]
+    for i in range(generated_sequence_size-WINDOW+1):
+        # input = generated_sequence[i:i+WINDOW-1]
+        input = sequence[i:i+WINDOW-1]
         predicted_frame = model.predict(np.expand_dims(input, axis=0), verbose=0)[1][0]
-        generated_sequence[i+window-1] = predicted_frame
+        generated_sequence[i+WINDOW-1] = predicted_frame
     
     return generated_sequence
 
