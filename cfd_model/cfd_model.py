@@ -73,7 +73,7 @@ def create_model(input_dimensions):
 def training(model, X_train, y_train, X_val, y_val):
     batch_size = 16
 
-    # epochs = 2
+    # epochs = 5
     epochs = 500
 
     history = model.fit(
@@ -140,8 +140,8 @@ def generate_sequence(model, sequence):
     
     return generated_sequence
 
-def generate_sequences(model, DATASET_FILE, generated_data_file):
-    dataset, _, _, _, _ = get_dataset(DATASET_FILE, split=False)
+def generate_sequences(model, dataset_file, generated_data_file):
+    dataset, _, _, _, _ = get_dataset(dataset_file, split=False)
     
     generated_dataset = np.zeros(dataset.shape)
 
@@ -157,8 +157,9 @@ def get_generated_dataset(generated_data_file):
     dataset = np.load(generated_data_file)
     return dataset
 
-def measure_stats(model, dataset, model_stats_file):
-    
+def measure_stats(model, dataset_file, model_stats_file):
+    dataset, _, _, _, _ = get_dataset(dataset_file, split=False)
+
     with open(model_stats_file, 'w') as f:
         f.write(f"sequence_id, model_duration, sequence_error\n")
 

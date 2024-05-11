@@ -37,9 +37,9 @@ if __name__ == "__main__":
 
     model = run_model_training(DATASET_FILE, MODEL_FOLDER, PLOTS_FOLDER)
     if model is None:
-        model_path = os.path.join(MODEL_FOLDER, "model_20240510_1228.h5")
+        model_path = os.path.join(MODEL_FOLDER, "model_20240510_2028.h5")
         model = get_model(model_path)
-    
+
     generate_sequences(model, DATASET_FILE, DATASET_GENERATED_FILE)
 
     generate_simulation_images()

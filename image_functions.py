@@ -15,12 +15,12 @@ def _get_color_map():
     color_map.set_bad(color="black")
     return color_map
 
-def _preprocess_frame(frame, min_val=0.0, max_max=1.0):
+def preprocess_frame(frame, min_val=0.0, max_max=1.0):
     frame[frame<min_val] = np.nan
     frame[frame>max_max] = np.nan
     frame[frame==-1] = np.nan
 
-def _plot_frame(frame, sequence_id, frame_id, images_folder_path, title="", save=True):
+def plot_frame(frame, sequence_id, frame_id, images_folder_path, title="", save=True):
     color_map = _get_color_map()
 
     plt.clf()
@@ -60,8 +60,8 @@ def generate_sequences_images(sequences, images_folder_path, label=""):
 
         for frame_id in range(LENGHT_SEQUENCE):
             frame = sequence[frame_id]
-            _preprocess_frame(frame)
-            _plot_frame(frame, seq_id, frame_id, images_folder_path, title)
+            preprocess_frame(frame)
+            plot_frame(frame, seq_id, frame_id, images_folder_path, title)
 
 def generate_simulation_images():
     sequences, _, _, _, _ = get_dataset(DATASET_FILE, split=False)
@@ -71,7 +71,7 @@ def generate_model_images():
     sequences = get_generated_dataset(DATASET_GENERATED_FILE)
     generate_sequences_images(sequences, IMAGES_MODEL_FOLDER, "(model)")
 
-def _plot_compare_frames(frame1, frame2, title1, title2, 
+def plot_compare_frames(frame1, frame2, title1, title2, 
                          sequence_id, frame_id, images_folder_path, 
                          orientation="v", save=True):
     
@@ -100,7 +100,6 @@ def _plot_compare_frames(frame1, frame2, title1, title2,
         file_path = os.path.join(sequence_folder_path, image_file_name)
         plt.savefig(file_path)
 
-
 def generate_compared_images():
 
     # delete previous folder
@@ -121,13 +120,13 @@ def generate_compared_images():
     for sequence_id, (original, generated) in enumerate(zip(original_sequences, generate_sequence)):
         
         for frame_id, (original_frame, generated_frame) in enumerate(zip(original, generated)):
-            _preprocess_frame(original_frame)
-            _preprocess_frame(generated_frame)
+            preprocess_frame(original_frame)
+            preprocess_frame(generated_frame)
 
             original_title = "Sequence {} (simulation)".format(sequence_id)
             generated_title = "Sequence {} (model)".format(sequence_id)
 
-            _plot_compare_frames(original_frame, generated_frame, 
+            plot_compare_frames(original_frame, generated_frame, 
                                  original_title, generated_title, 
                                  sequence_id, frame_id, IMAGES_COMPARED_FOLDER, 
                                  orientation="h", save=True)
