@@ -23,6 +23,7 @@ def init_folders():
     _init_folder(STATS_FOLDER)
     _init_folder(IMAGES_SIMULATION_FOLDER)
     _init_folder(IMAGES_MODEL_FOLDER)
+    _init_folder(IMAGES_COMPARED_FOLDER)
 
 
 if __name__ == "__main__":
@@ -37,4 +38,9 @@ if __name__ == "__main__":
     if model is None:
         model_path = os.path.join(MODEL_FOLDER, "model_20240510_1228.h5")
         model = get_model(model_path)
+    
     generate_sequences(model, DATASET_FILE, DATASET_GENERATED_FILE)
+
+    generate_simulation_images()
+    generate_model_images()
+    generate_compared_images()

@@ -153,10 +153,11 @@ def generate_sequences(model, DATASET_FILE, generated_data_file):
 
     return generated_dataset
 
-def load_generated_sequences(generated_data_file):
+def get_generated_dataset(generated_data_file):
     dataset = np.load(generated_data_file)
     return dataset
 
+def measure_stats(model, dataset, model_stats_file):
     
     with open(model_stats_file, 'w') as f:
         f.write(f"sequence_id, model_duration, sequence_error\n")
@@ -164,7 +165,7 @@ def load_generated_sequences(generated_data_file):
         for sequence_id, sequence in enumerate(dataset):
 
             start_time = datetime.now()
-            generated_sequence = generate_sequence(model, sequence, window)
+            generated_sequence = generate_sequence(model, sequence)
             end_time = datetime.now()
             model_duration = (end_time - start_time).total_seconds()
             
