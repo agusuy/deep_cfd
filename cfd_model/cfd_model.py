@@ -11,6 +11,10 @@ from keras.optimizers import Adam
 from datetime import datetime
 from .cfd_dataset import get_dataset
 
+def get_model(model_file):
+    model = load_model(model_file)
+    return model
+
 def create_model(input_dimensions):
     GPUS = ["GPU:0","GPU:1"]
     # GPUS = ["GPU:0"]
@@ -93,6 +97,8 @@ def run_model_training(dataset_file, models_folder, plots_folder):
 
     plot_training_history(training_history, model_name, plots_folder)
 
+    return model
+
 def plot_training_history(history, model_name, plots_folder):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     fig.suptitle('Training loss')
@@ -133,18 +139,23 @@ def generate_sequence(model, sequence, window):
     
     return generated_sequence
 
-def generate_sequences(model, dataset, window):
+def generate_sequences(model, DATASET_FILE, generated_data_file):
+    dataset, _, _, _, _ = get_dataset(DATASET_FILE, split=False)
+    
     generated_dataset = np.zeros(dataset.shape)
 
     for i, sequence in enumerate(dataset):
-        generated_sequence = generate_sequence(model, sequence, window)
+        generated_sequence = generate_sequence(model, sequence)
         generated_dataset[i,:] = generated_sequence
 
-    # TODO: save file?
+    np.save(generated_data_file, generated_dataset)
 
     return generated_dataset
 
-def measure_stats(model, dataset, window, model_stats_file):
+def load_generated_sequences(generated_data_file):
+    dataset = np.load(generated_data_file)
+    return dataset
+
     
     with open(model_stats_file, 'w') as f:
         f.write(f"sequence_id, model_duration, sequence_error\n")
