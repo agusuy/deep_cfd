@@ -1,8 +1,10 @@
 import os
-from project_constants import DATASET_FILE, DATASET_FOLDER, MODEL_FOLDER, PLOTS_FOLDER, SIM_CONFIGURATIONS, SIM_STATS, STATS_FOLDER
+from project_constants import DATASET_FILE, DATASET_FOLDER, IMAGES_MODEL_FOLDER,\
+                        IMAGES_SIMULATION_FOLDER, MODEL_FOLDER, PLOTS_FOLDER,\
+                        SIM_CONFIGURATIONS, SIM_STATS, STATS_FOLDER
 from cfd_simulation.simulation import create_dataset
-from cfd_model.cfd_model import run_model_training
-
+from cfd_model.cfd_model import run_model_training, get_model
+from image_functions import generate_simulation_images, generate_model_images
 
 def _init_folder(path):
     try:
@@ -17,14 +19,22 @@ def init_folders():
     _init_folder(MODEL_FOLDER)
     _init_folder(PLOTS_FOLDER)
     _init_folder(STATS_FOLDER)
-    
+    _init_folder(IMAGES_SIMULATION_FOLDER)
+    _init_folder(IMAGES_MODEL_FOLDER)
+
 
 if __name__ == "__main__":
     
+    model = None
+
     init_folders()
 
     create_dataset(DATASET_FILE, SIM_CONFIGURATIONS, SIM_STATS)
 
-    run_model_training(DATASET_FILE, MODEL_FOLDER, PLOTS_FOLDER)
+    model = run_model_training(DATASET_FILE, MODEL_FOLDER, PLOTS_FOLDER)
+    if model is None:
+        model_path = os.path.join(MODEL_FOLDER, "model_20240510_1228.h5")
+        model = get_model(model_path)
 
-    
+    generate_simulation_images()
+    generate_model_images(model)

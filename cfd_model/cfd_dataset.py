@@ -69,8 +69,7 @@ def print_dataset_statistics(data):
 
     print(statistics)
 
-def get_dataset(file):
-    # TODO: Split this function
+def get_dataset(file, split=True):
     dataset_original = _load_data(file)
     print("Original Dataset:")
     print_dataset_dimension(dataset_original)
@@ -78,17 +77,20 @@ def get_dataset(file):
 
     dataset_processed = _preprocessing(dataset_original)
     print("Processed Dataset:")
-    print_dataset_dimension(dataset_original)
-    print_dataset_statistics(dataset_original)
+    print_dataset_dimension(dataset_processed)
+    print_dataset_statistics(dataset_processed)
 
-    X_train, y_train, X_val, y_val = _train_test(dataset_processed)
-    print("X_train:")
-    print_dataset_dimension(X_train)
-    print("y_train:")
-    print_dataset_dimension(y_train)
-    print("X_val:")
-    print_dataset_dimension(X_val)
-    print("y_val:")
-    print_dataset_dimension(y_val)
+    if split: 
+        X_train, y_train, X_val, y_val = _train_test(dataset_processed)
+        print("X_train:")
+        print_dataset_dimension(X_train)
+        print("y_train:")
+        print_dataset_dimension(y_train)
+        print("X_val:")
+        print_dataset_dimension(X_val)
+        print("y_val:")
+        print_dataset_dimension(y_val)
+    else:
+        X_train, y_train, X_val, y_val = [], [], [], []
 
     return dataset_processed, X_train, y_train, X_val, y_val

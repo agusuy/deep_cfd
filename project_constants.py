@@ -1,5 +1,6 @@
 import os
-from cfd_simulation.simulation_constants import HEIGHT, WIDTH, NUM_SEQUENCES
+from cfd_simulation.simulation_constants import HEIGHT, WIDTH, NUM_SEQUENCES, LENGHT_SEQUENCE
+from cfd_model.model_constants import WINDOW
 
 
 ###### Folders and Files ######
