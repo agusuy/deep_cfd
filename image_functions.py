@@ -20,7 +20,7 @@ def preprocess_frame(frame, min_val=0.0, max_max=1.0):
     frame[frame>max_max] = np.nan
     frame[frame==-1] = np.nan
 
-def plot_frame(frame, sequence_id, frame_id, images_folder_path, title="", save=True):
+def plot_frame(frame, sequence_id=None, frame_id=None, title="", images_folder_path=None):
     color_map = _get_color_map()
 
     plt.clf()
@@ -34,7 +34,7 @@ def plot_frame(frame, sequence_id, frame_id, images_folder_path, title="", save=
              )
     plt.tight_layout()
     
-    if save:
+    if images_folder_path is not None:
         sequence_folder_name = "sequence_{}".format(sequence_id)
         sequence_folder_path = os.path.join(images_folder_path, sequence_folder_name)
         image_file_name = "frame_{0:04d}.png".format(frame_id)
@@ -61,7 +61,7 @@ def generate_sequences_images(sequences, images_folder_path, label=""):
         for frame_id in range(LENGHT_SEQUENCE):
             frame = sequence[frame_id]
             preprocess_frame(frame)
-            plot_frame(frame, seq_id, frame_id, images_folder_path, title)
+            plot_frame(frame, seq_id, frame_id, title, images_folder_path)
 
 def generate_simulation_images():
     sequences, _, _, _, _ = get_dataset(DATASET_FILE, split=False)
@@ -72,8 +72,8 @@ def generate_model_images():
     generate_sequences_images(sequences, IMAGES_MODEL_FOLDER, "(model)")
 
 def plot_compare_frames(frame1, frame2, title1, title2, 
-                         sequence_id, frame_id, images_folder_path, 
-                         orientation="v", save=True):
+                         sequence_id, frame_id, images_folder_path=None, 
+                         orientation="v"):
     
     color_map = _get_color_map()
     plt.clf()
@@ -93,7 +93,7 @@ def plot_compare_frames(frame1, frame2, title1, title2,
 
     plt.tight_layout()
 
-    if save:
+    if images_folder_path is not None:
         sequence_folder_name = "sequence_{}".format(sequence_id)
         sequence_folder_path = os.path.join(images_folder_path, sequence_folder_name)
         image_file_name = "frame_{0:04d}.png".format(frame_id)
@@ -129,5 +129,5 @@ def generate_compared_images():
             plot_compare_frames(original_frame, generated_frame, 
                                  original_title, generated_title, 
                                  sequence_id, frame_id, IMAGES_COMPARED_FOLDER, 
-                                 orientation="h", save=True)
+                                 orientation="h")
 
