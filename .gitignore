@@ -161,7 +161,4 @@ cython_debug/
 
 
 # Project specific
-cfd_simulation/outputs/images/
-dataset/dataset.npy
-cfd_model/models/
-outputs/model/images/
+outputs/
