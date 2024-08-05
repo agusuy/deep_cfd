@@ -39,7 +39,9 @@ def plot_frame(frame, sequence_id=None, frame_id=None, title="", images_folder_p
         sequence_folder_path = os.path.join(images_folder_path, sequence_folder_name)
         image_file_name = "frame_{0:04d}.png".format(frame_id)
         file_path = os.path.join(sequence_folder_path, image_file_name)
-        plt.savefig(file_path)
+        plt.savefig(file_path, bbox_inches='tight')
+    
+    plt.close()
 
 def generate_sequences_images(sequences, images_folder_path, label=""):
     # delete previous folder
@@ -98,7 +100,9 @@ def plot_compare_frames(frame1, frame2, title1, title2,
         sequence_folder_path = os.path.join(images_folder_path, sequence_folder_name)
         image_file_name = "frame_{0:04d}.png".format(frame_id)
         file_path = os.path.join(sequence_folder_path, image_file_name)
-        plt.savefig(file_path)
+        plt.savefig(file_path, bbox_inches='tight')
+    
+    plt.close()
 
 def generate_compared_images():
 
