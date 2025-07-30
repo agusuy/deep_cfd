@@ -133,8 +133,8 @@ def generate_sequence(model, sequence):
     generated_sequence[0:WINDOW-1] = sequence[0:WINDOW-1]
 
     for i in range(generated_sequence_size-WINDOW+1):
-        # input = generated_sequence[i:i+WINDOW-1]
-        input = sequence[i:i+WINDOW-1]
+        # input = sequence[i:i+WINDOW-1]
+        input = generated_sequence[i:i+WINDOW-1]
         predicted_frame = model.predict(np.expand_dims(input, axis=0), verbose=0)[1][0]
         generated_sequence[i+WINDOW-1] = predicted_frame
     
